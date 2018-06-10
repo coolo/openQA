@@ -1,27 +1,30 @@
 sudo: required
 dist: trusty
 services:
-  - docker
+- docker
 env:
   global:
-    - COMMIT_AUTHOR_EMAIL=skynet@open.qa
+  - COMMIT_AUTHOR_EMAIL=skynet@open.qa
+  - secure: Gi8dsriiXrH3oqaxALDJNPTCyu1JJ7JF/ZpW+bi1dz2KWk0cmXSi6+elxDu3/g2LbUKzo+a14O3V9cZZlFGHW6vJ9Lidf82aLvLMfgt7CInyitt3BmFXD//JcbcwbPXDZ9QcyYo3NcLCvnZWqSm4AxOCwfbxKwaBYf+02exoJdU=
   matrix:
-    - FULLSTACK=0 UITESTS=0
-    - FULLSTACK=0 UITESTS=1
-    - GH_PUBLISH=true FULLSTACK=1
-    - SCHEDULER_FULLSTACK=1
-before_install: yes
-install: yes
+  - FULLSTACK=0 UITESTS=0
+  - FULLSTACK=0 UITESTS=1
+  - GH_PUBLISH=true FULLSTACK=1
+  - SCHEDULER_FULLSTACK=1
+before_install: true
+install: true
 before_script:
-  - docker pull dasantiago/openqa-tests  
+- docker pull dasantiago/openqa-tests
 cache:
   directories:
-    - assets/cache
+  - assets/cache
 script:
-  - mkdir -p assets/cache
-  - chmod a+w assets/cache
-  - touch openqa-debug.log
-  - chmod a+w openqa-debug.log
-  - docker run --cap-add SYS_ADMIN -v $TRAVIS_BUILD_DIR:/opt/openqa -v /var/run/dbus:/var/run/dbus --env-file <(env | grep TRAVIS) -e TRAVIS=true -e FULLSTACK -e UITESTS -e SCHEDULER_FULLSTACK -e GH_PUBLISH dasantiago/openqa-tests make travis-codecov
+- mkdir -p assets/cache
+- chmod a+w assets/cache
+- touch openqa-debug.log
+- chmod a+w openqa-debug.log
+- docker run --cap-add SYS_ADMIN -v $TRAVIS_BUILD_DIR:/opt/openqa -v /var/run/dbus:/var/run/dbus
+  --env-file <(env | grep TRAVIS) -e TRAVIS=true -e FULLSTACK -e UITESTS -e SCHEDULER_FULLSTACK
+  -e GH_PUBLISH dasantiago/openqa-tests make travis-codecov
 after_failure:
-  - cat openqa-debug.log
+- cat openqa-debug.log
