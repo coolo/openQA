@@ -103,7 +103,8 @@ ok(Mojolicious::Commands->start_app('OpenQA::WebAPI', 'eval', '1+0'));
 
 # we don't want no fixtures
 my $mojoport = Mojo::IOLoop::Server->generate_port;
-my $wsport   = $mojoport + 1;
+warn "*** MOJOPORT: $mojoport\n";
+my $wsport = $mojoport + 1;
 $wspid = create_websocket_server($wsport, 0, 0);
 my $driver       = call_driver(sub { }, {mojoport => $mojoport});
 my $connect_args = OpenQA::Test::FullstackUtils::get_connect_args();
@@ -334,8 +335,8 @@ subtest 'Cache tests' => sub {
 
     my $cache_client = OpenQA::CacheService::Client->new;
 
-    sleep 5 and diag "Waiting for cache service to be available"        until $cache_client->available;
-    sleep 5 and diag "Waiting for cache service worker to be available" until $cache_client->available_workers;
+    sleep 5 and diag "Waiting for cache service to be available"        until $cache_client->info->available;
+    sleep 5 and diag "Waiting for cache service worker to be available" until $cache_client->info->available_workers;
 
     my $job_name = 'tinycore-1-flavor-i386-Build1-core@coolone';
     OpenQA::Test::FullstackUtils::client_call(
