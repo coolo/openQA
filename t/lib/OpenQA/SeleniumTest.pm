@@ -74,6 +74,15 @@ sub start_app {
         _exit(0);
     }
 
+    use POSIX 'WNOHANG';
+    $SIG{CHLD} = sub {
+        while ((my $pid = waitpid -1, WNOHANG) > 0) {
+            my $status = $? >> 8;
+            warn "*** EXIT: $pid ($status)\n";
+            warn "*** $pid IS THE WEBUI!\n" if $pid == $mojopid;
+        }
+    };
+
     # as this might download assets on first test, we need to wait a while
     my $wait = time + 50;
     while (time < $wait) {
